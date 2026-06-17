@@ -19,9 +19,22 @@ export function ContactPage() {
   });
   const [submitted, setSubmitted] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
+    try {
+      const response = await fetch("https://script.google.com/macros/s/AKfycbz1cAqlZzRkh_d-vAd9F11of_rTmkUZQam3he1P5Xc37wzu_z36eY_LUpEtiXrNmYkE/exec", {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({ formType: "contact", ...formData }),
+      });
+      if (response.ok) {
+        setSubmitted(true);
+      } else {
+        alert("Something went wrong. Please try again.");
+      }
+    } catch (error) {
+      alert("Something went wrong. Please try again.");
+    }
   };
 
   return (

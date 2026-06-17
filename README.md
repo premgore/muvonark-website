@@ -88,7 +88,6 @@ Muvonark Talent Network/
 - pnpm `>= 8`
 
 ### Installation
-
 ```bash
 # Clone the repository
 git clone https://github.com/your-org/muvonark-talent-network.git
@@ -174,4 +173,4 @@ See [ATTRIBUTIONS.md](./ATTRIBUTIONS.md) for third-party asset credits.
 
 **Muvonark**  
 Built in India, for the world.  
-Visit the [Contact page](https://muvonark.com/contact) or reach out via the website.
+Visit the [Contact page](https://muvonark.com/contact) or reach out via the website
