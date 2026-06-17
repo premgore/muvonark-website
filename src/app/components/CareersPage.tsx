@@ -67,7 +67,7 @@ export function CareersPage() {
         ...(resumeBase64 && { resumeBase64, resumeFileName, resumeMimeType }),
       };
 
-      const response = await fetch("https://script.google.com/macros/s/AKfycbz1cAqlZzRkh_d-vAd9F11of_rTmkUZQam3he1P5Xc37wzu_z36eY_LUpEtiXrNmYkE/exec", {
+      const response = await fetch("https://script.google.com/macros/s/AKfycbwv4J5aiPFdsDzCR7nggJe8GP8JmBzPl5eVE8m6bteO4pk1j5Xqm-7C1pp2DiZ9hNsK/exec", {
         method: "POST",
         headers: { "Content-Type": "text/plain;charset=utf-8" },
         body: JSON.stringify(body),
@@ -150,11 +150,10 @@ export function CareersPage() {
               <button
                 key={t}
                 onClick={() => setFilter(t)}
-                className={`px-5 py-2 rounded-full text-sm font-semibold capitalize transition-all ${
-                  filter === t
-                    ? "bg-[#0D1B3E] text-white"
-                    : "bg-white text-[#5A6A8A] border border-[#0D1B3E]/10 hover:border-[#2B7BE5]/30 hover:text-[#2B7BE5]"
-                }`}
+                className={`px-5 py-2 rounded-full text-sm font-semibold capitalize transition-all ${filter === t
+                  ? "bg-[#0D1B3E] text-white"
+                  : "bg-white text-[#5A6A8A] border border-[#0D1B3E]/10 hover:border-[#2B7BE5]/30 hover:text-[#2B7BE5]"
+                  }`}
               >
                 {t === "all" ? "All Roles" : t.replace("-", " ")}
               </button>
@@ -281,11 +280,10 @@ export function CareersPage() {
                       type="button"
                       key={t}
                       onClick={() => setFormData({ ...formData, type: t })}
-                      className={`px-5 py-2.5 rounded-xl text-sm font-semibold capitalize transition-all border ${
-                        formData.type === t
-                          ? "bg-[#0D1B3E] text-white border-[#0D1B3E]"
-                          : "bg-white text-[#5A6A8A] border-[#0D1B3E]/15 hover:border-[#2B7BE5]/30"
-                      }`}
+                      className={`px-5 py-2.5 rounded-xl text-sm font-semibold capitalize transition-all border ${formData.type === t
+                        ? "bg-[#0D1B3E] text-white border-[#0D1B3E]"
+                        : "bg-white text-[#5A6A8A] border-[#0D1B3E]/15 hover:border-[#2B7BE5]/30"
+                        }`}
                     >
                       {t.replace("-", " ")}
                     </button>

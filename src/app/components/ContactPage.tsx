@@ -22,7 +22,7 @@ export function ContactPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch("https://script.google.com/macros/s/AKfycbz1cAqlZzRkh_d-vAd9F11of_rTmkUZQam3he1P5Xc37wzu_z36eY_LUpEtiXrNmYkE/exec", {
+      const response = await fetch("https://script.google.com/macros/s/AKfycbwv4J5aiPFdsDzCR7nggJe8GP8JmBzPl5eVE8m6bteO4pk1j5Xqm-7C1pp2DiZ9hNsK/exec", {
         method: "POST",
         headers: { "Content-Type": "text/plain;charset=utf-8" },
         body: JSON.stringify({ formType: "contact", ...formData }),
