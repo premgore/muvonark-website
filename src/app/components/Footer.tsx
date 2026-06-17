@@ -63,7 +63,7 @@ export function Footer() {
             </div>
             <div className="flex items-center gap-1 mb-3">
               <Mail className="w-4 h-4 text-[#2B7BE5] flex-shrink-0" />
-              <span className="text-white/60 text-sm">muvonark@premgore.in</span>
+              <span className="text-white/60 text-sm">muvonark.team@gmail.com</span>
             </div>
             <div className="flex items-center gap-1 mb-6">
               <Phone className="w-4 h-4 text-[#2B7BE5] flex-shrink-0" />
