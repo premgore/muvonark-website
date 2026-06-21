@@ -194,7 +194,7 @@ export function ProjectsPage() {
                   const CardContent = (
                     <>
                       <div className="relative h-48 overflow-hidden bg-[#EEF1F6]">
-                        {p.img && <img src={p.img} alt={p.title} className="w-full h-full object-cover" />}
+                        {p.img && <img loading="lazy" src={p.img} alt={p.title} className="w-full h-full object-cover" />}
                         <div className="absolute top-4 left-4">
                           <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${sc.badge}`}>
                             <Icon className="w-3 h-3" />

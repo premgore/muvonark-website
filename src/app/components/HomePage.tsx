@@ -333,7 +333,7 @@ export function HomePage() {
                   className="group rounded-2xl overflow-hidden border border-[#0D1B3E]/8 hover:shadow-xl hover:shadow-[#0D1B3E]/8 transition-all duration-300 bg-white"
                 >
                   <div className="relative h-48 overflow-hidden bg-[#EEF1F6]">
-                    <img
+                    <img loading="lazy"
                       src={p.img}
                       alt={p.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
@@ -388,7 +388,7 @@ export function HomePage() {
                 className="group bg-white rounded-2xl overflow-hidden border border-[#0D1B3E]/8 hover:shadow-xl hover:shadow-[#0D1B3E]/8 transition-all duration-300"
               >
                 <div className="h-44 overflow-hidden bg-[#EEF1F6]">
-                  <img
+                  <img loading="lazy"
                     src={a.img}
                     alt={a.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"

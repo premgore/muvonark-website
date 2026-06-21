@@ -148,7 +148,7 @@ export function ServicesPage() {
             </div>
             <div className={i % 2 !== 0 ? "[direction:ltr]" : ""}>
               <div className="rounded-2xl overflow-hidden shadow-2xl shadow-[#0D1B3E]/10 bg-[#EEF1F6]">
-                <img src={s.img} alt={s.title} className="w-full h-80 object-cover" />
+                <img loading="lazy" src={s.img} alt={s.title} className="w-full h-80 object-cover" />
               </div>
             </div>
           </div>

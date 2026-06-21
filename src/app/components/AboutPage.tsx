@@ -87,10 +87,10 @@ export function AboutPage() {
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="rounded-2xl overflow-hidden h-56 bg-[#EEF1F6]">
-              <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=500&h=400&fit=crop&auto=format" alt="Team collaboration" className="w-full h-full object-cover" />
+              <img loading="lazy" src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=500&h=400&fit=crop&auto=format" alt="Team collaboration" className="w-full h-full object-cover" />
             </div>
             <div className="rounded-2xl overflow-hidden h-56 mt-8 bg-[#EEF1F6]">
-              <img src="https://images.unsplash.com/photo-1629904853716-f0bc54eea481?w=500&h=400&fit=crop&auto=format" alt="Office environment" className="w-full h-full object-cover" />
+              <img loading="lazy" src="https://images.unsplash.com/photo-1629904853716-f0bc54eea481?w=500&h=400&fit=crop&auto=format" alt="Office environment" className="w-full h-full object-cover" />
             </div>
           </div>
         </div>

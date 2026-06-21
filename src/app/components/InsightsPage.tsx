@@ -146,7 +146,7 @@ export function InsightsPage() {
         {featured && (
           <Link to="/insights" className="group grid grid-cols-1 lg:grid-cols-2 gap-0 rounded-2xl overflow-hidden border border-[#0D1B3E]/8 bg-white mb-10 hover:shadow-xl hover:shadow-[#0D1B3E]/8 transition-all duration-300">
             <div className="h-64 lg:h-auto overflow-hidden bg-[#EEF1F6]">
-              <img src={featured.img} alt={featured.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+              <img loading="lazy" src={featured.img} alt={featured.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
             </div>
             <div className="p-8 lg:p-10 flex flex-col justify-center">
               <div className="flex items-center gap-2 mb-4">
@@ -179,7 +179,7 @@ export function InsightsPage() {
               className="group bg-white rounded-2xl overflow-hidden border border-[#0D1B3E]/8 hover:shadow-xl hover:shadow-[#0D1B3E]/8 transition-all duration-300"
             >
               <div className="h-44 overflow-hidden bg-[#EEF1F6]">
-                <img src={a.img} alt={a.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                <img loading="lazy" src={a.img} alt={a.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
               </div>
               <div className="p-6">
                 <div className="flex items-center gap-2 mb-3">
