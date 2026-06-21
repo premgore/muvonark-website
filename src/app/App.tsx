@@ -9,6 +9,7 @@ import { ProjectsPage } from "./components/ProjectsPage";
 import { AboutPage } from "./components/AboutPage";
 import { CareersPage } from "./components/CareersPage";
 import { ContactPage } from "./components/ContactPage";
+import { AffiSpherePage } from "./components/AffiSpherePage";
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -32,6 +33,7 @@ function AppRoutes() {
           <Route path="/about" element={<AboutPage />} />
           <Route path="/careers" element={<CareersPage />} />
           <Route path="/contact" element={<ContactPage />} />
+          <Route path="/affisphere" element={<AffiSpherePage />} />
         </Routes>
       </main>
       <Footer />

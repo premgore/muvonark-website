@@ -190,32 +190,47 @@ export function ProjectsPage() {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {items.map((p) => (
-                  <div
-                    key={p.title}
-                    className={`bg-white rounded-2xl overflow-hidden border hover:shadow-xl hover:shadow-[#0D1B3E]/8 transition-all duration-300 ${sc.border}`}
-                  >
-                    <div className="relative h-48 overflow-hidden bg-[#EEF1F6]">
-                      {p.img && <img src={p.img} alt={p.title} className="w-full h-full object-cover" />}
-                      <div className="absolute top-4 left-4">
-                        <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${sc.badge}`}>
-                          <Icon className="w-3 h-3" />
-                          {sc.label}
-                        </span>
+                {items.map((p) => {
+                  const CardContent = (
+                    <>
+                      <div className="relative h-48 overflow-hidden bg-[#EEF1F6]">
+                        {p.img && <img src={p.img} alt={p.title} className="w-full h-full object-cover" />}
+                        <div className="absolute top-4 left-4">
+                          <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${sc.badge}`}>
+                            <Icon className="w-3 h-3" />
+                            {sc.label}
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                    <div className="p-6">
-                      <p className="text-[#2B7BE5] text-xs font-semibold uppercase tracking-wider mb-2">{p.category}</p>
-                      <h3 className="text-[#0D1B3E] mb-2" style={{ fontFamily: "var(--font-display)", fontWeight: 700 }}>{p.title}</h3>
-                      <p className="text-[#5A6A8A] text-sm leading-relaxed mb-4">{p.desc}</p>
-                      <div className="flex flex-wrap gap-2">
-                        {p.tags.map((tag) => (
-                          <span key={tag} className="px-2.5 py-1 rounded-lg bg-[#EEF1F6] text-[#5A6A8A] text-xs font-medium">{tag}</span>
-                        ))}
+                      <div className="p-6">
+                        <p className="text-[#2B7BE5] text-xs font-semibold uppercase tracking-wider mb-2">{p.category}</p>
+                        <h3 className="text-[#0D1B3E] mb-2" style={{ fontFamily: "var(--font-display)", fontWeight: 700 }}>{p.title}</h3>
+                        <p className="text-[#5A6A8A] text-sm leading-relaxed mb-4">{p.desc}</p>
+                        <div className="flex flex-wrap gap-2">
+                          {p.tags.map((tag) => (
+                            <span key={tag} className="px-2.5 py-1 rounded-lg bg-[#EEF1F6] text-[#5A6A8A] text-xs font-medium">{tag}</span>
+                          ))}
+                        </div>
                       </div>
+                    </>
+                  );
+
+                  const className = `bg-white rounded-2xl overflow-hidden border hover:shadow-xl hover:shadow-[#0D1B3E]/8 transition-all duration-300 ${sc.border}`;
+
+                  if (p.title === "Affisphere") {
+                    return (
+                      <Link to="/affisphere" key={p.title} className={`block ${className}`}>
+                        {CardContent}
+                      </Link>
+                    );
+                  }
+
+                  return (
+                    <div key={p.title} className={className}>
+                      {CardContent}
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           );

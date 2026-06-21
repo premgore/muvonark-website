@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Briefcase, Clock, GraduationCap, ArrowRight, Upload, CheckCircle2, Users, Star } from "lucide-react";
-import { Link } from "react-router";
+import { Link, useSearchParams, useLocation } from "react-router";
 
 const jobListings = [
   { type: "full-time", role: "Senior Full-Stack Developer", skills: ["React", "Node.js", "PostgreSQL"], location: "Remote / India" },
@@ -23,19 +23,29 @@ const jobTypeConfig = {
 
 const filterTypes = ["all", "full-time", "part-time", "internship"] as const;
 
-const roles = [
-  "Frontend Developer", "Backend Developer", "Full-Stack Developer",
-  "UI/UX Designer", "DevOps Engineer", "Data Scientist",
-  "Business Analyst", "Project Manager", "QA Engineer", "Other",
-];
-
 export function CareersPage() {
+  const [searchParams] = useSearchParams();
+  const { hash } = useLocation();
+  const isTraining = searchParams.get("type") === "training";
+
   const [filter, setFilter] = useState<string>("all");
   const [formData, setFormData] = useState({
-    name: "", email: "", phone: "", role: "", type: "internship",
-    skills: "", message: "", resume: null as File | null,
+    name: "", email: "", phone: "", college: "",
+    skills: "", portfolio: "", github: "",
+    qualification: "", resume: null as File | null,
   });
   const [submitted, setSubmitted] = useState(false);
+
+  useEffect(() => {
+    if (isTraining || hash === "#apply") {
+      setTimeout(() => {
+        const applySection = document.getElementById("apply");
+        if (applySection) {
+          applySection.scrollIntoView({ behavior: "smooth" });
+        }
+      }, 100);
+    }
+  }, [isTraining, hash]);
 
   const filtered = filter === "all" ? jobListings : jobListings.filter((j) => j.type === filter);
 
@@ -46,7 +56,7 @@ export function CareersPage() {
       let resumeFileName = "";
       let resumeMimeType = "";
 
-      if (formData.resume) {
+      if (!isTraining && formData.resume) {
         resumeFileName = formData.resume.name;
         resumeMimeType = formData.resume.type;
         resumeBase64 = await new Promise((resolve, reject) => {
@@ -62,7 +72,7 @@ export function CareersPage() {
 
       const { resume, ...restFormData } = formData;
       const body = {
-        formType: "careers",
+        formType: isTraining ? "training" : "careers",
         ...restFormData,
         ...(resumeBase64 && { resumeBase64, resumeFileName, resumeMimeType }),
       };
@@ -200,11 +210,17 @@ export function CareersPage() {
       <section id="apply" className="py-20 bg-white">
         <div className="max-w-4xl mx-auto px-6 lg:px-8">
           <div className="mb-10">
-            <p className="text-[#2B7BE5] text-sm font-semibold uppercase tracking-widest mb-3">Apply Now</p>
+            <p className="text-[#2B7BE5] text-sm font-semibold uppercase tracking-widest mb-3">
+              {isTraining ? "Training Program" : "Apply Now"}
+            </p>
             <h2 className="text-4xl text-[#0D1B3E] mb-3" style={{ fontFamily: "var(--font-display)", fontWeight: 700 }}>
-              Drop your application
+              {isTraining ? "Enroll in Training" : "Drop your application"}
             </h2>
-            <p className="text-[#5A6A8A]">Fill in your details below — our team reviews every application within 48 hours.</p>
+            <p className="text-[#5A6A8A]">
+              {isTraining 
+                ? "Fill in your details below to join the AffiSphere Training Program. We will contact you shortly." 
+                : "Fill in your details below — our team reviews every application within 48 hours."}
+            </p>
           </div>
 
           {submitted ? (
@@ -212,12 +228,16 @@ export function CareersPage() {
               <div className="w-16 h-16 rounded-2xl bg-emerald-100 flex items-center justify-center mx-auto mb-5">
                 <CheckCircle2 className="w-8 h-8 text-emerald-600" />
               </div>
-              <h3 className="text-2xl text-[#0D1B3E] mb-2" style={{ fontFamily: "var(--font-display)", fontWeight: 700 }}>Application Received!</h3>
+              <h3 className="text-2xl text-[#0D1B3E] mb-2" style={{ fontFamily: "var(--font-display)", fontWeight: 700 }}>
+                {isTraining ? "Enrollment Received!" : "Application Received!"}
+              </h3>
               <p className="text-[#5A6A8A] max-w-md mx-auto mb-6">
-                Thank you for applying to Muvonark. Our team will review your application and reach out within 48 hours.
+                {isTraining 
+                  ? "Thank you for enrolling in the AffiSphere Training Program. Our team will contact you shortly with further instructions regarding onboarding and training."
+                  : "Thank you for applying to AffiSphere. Our team will review your application and contact you shortly regarding the interview process."}
               </p>
               <button onClick={() => setSubmitted(false)} className="text-[#2B7BE5] font-semibold">
-                Submit another application
+                Submit another {isTraining ? "enrollment" : "application"}
               </button>
             </div>
           ) : (
@@ -249,8 +269,9 @@ export function CareersPage() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
-                  <label className="block text-sm font-semibold text-[#0D1B3E] mb-2">Phone Number</label>
+                  <label className="block text-sm font-semibold text-[#0D1B3E] mb-2">Mobile Number *</label>
                   <input
+                    required
                     type="tel"
                     placeholder="+91 98765 43210"
                     value={formData.phone}
@@ -259,90 +280,98 @@ export function CareersPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-[#0D1B3E] mb-2">Role You're Applying For *</label>
-                  <select
-                    required
-                    value={formData.role}
-                    onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl border border-[#0D1B3E]/15 bg-[#F8F9FB] text-[#0D1B3E] focus:outline-none focus:ring-2 focus:ring-[#2B7BE5]/30 focus:border-[#2B7BE5] transition-all"
-                  >
-                    <option value="">Select a role</option>
-                    {roles.map((r) => <option key={r} value={r}>{r}</option>)}
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-[#0D1B3E] mb-2">Position Type *</label>
-                <div className="flex flex-wrap gap-3">
-                  {(["full-time", "part-time", "internship"] as const).map((t) => (
-                    <button
-                      type="button"
-                      key={t}
-                      onClick={() => setFormData({ ...formData, type: t })}
-                      className={`px-5 py-2.5 rounded-xl text-sm font-semibold capitalize transition-all border ${formData.type === t
-                        ? "bg-[#0D1B3E] text-white border-[#0D1B3E]"
-                        : "bg-white text-[#5A6A8A] border-[#0D1B3E]/15 hover:border-[#2B7BE5]/30"
-                        }`}
-                    >
-                      {t.replace("-", " ")}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-[#0D1B3E] mb-2">Your Skills *</label>
-                <input
-                  required
-                  type="text"
-                  placeholder="React, Node.js, TypeScript, Figma..."
-                  value={formData.skills}
-                  onChange={(e) => setFormData({ ...formData, skills: e.target.value })}
-                  className="w-full px-4 py-3 rounded-xl border border-[#0D1B3E]/15 bg-[#F8F9FB] text-[#0D1B3E] placeholder-[#5A6A8A]/60 focus:outline-none focus:ring-2 focus:ring-[#2B7BE5]/30 focus:border-[#2B7BE5] transition-all"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-[#0D1B3E] mb-2">
-                  Professional Summary / Why Muvonark? *
-                </label>
-                <textarea
-                  required
-                  rows={5}
-                  placeholder="Tell us about your background, what you've built, and why you want to join Muvonark. Be specific — what kind of projects excite you?"
-                  value={formData.message}
-                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                  className="w-full px-4 py-3 rounded-xl border border-[#0D1B3E]/15 bg-[#F8F9FB] text-[#0D1B3E] placeholder-[#5A6A8A]/60 focus:outline-none focus:ring-2 focus:ring-[#2B7BE5]/30 focus:border-[#2B7BE5] transition-all resize-none"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-[#0D1B3E] mb-2">Resume / CV *</label>
-                <label className="flex flex-col items-center justify-center w-full h-36 rounded-xl border-2 border-dashed border-[#0D1B3E]/20 hover:border-[#2B7BE5]/50 bg-[#F8F9FB] cursor-pointer transition-all group">
+                  <label className="block text-sm font-semibold text-[#0D1B3E] mb-2">College Name *</label>
                   <input
-                    type="file"
-                    accept=".pdf,.doc,.docx"
-                    className="hidden"
-                    onChange={(e) => setFormData({ ...formData, resume: e.target.files?.[0] || null })}
+                    required
+                    type="text"
+                    placeholder="Indian Institute of Technology"
+                    value={formData.college}
+                    onChange={(e) => setFormData({ ...formData, college: e.target.value })}
+                    className="w-full px-4 py-3 rounded-xl border border-[#0D1B3E]/15 bg-[#F8F9FB] text-[#0D1B3E] placeholder-[#5A6A8A]/60 focus:outline-none focus:ring-2 focus:ring-[#2B7BE5]/30 focus:border-[#2B7BE5] transition-all"
                   />
-                  <Upload className="w-8 h-8 text-[#5A6A8A] group-hover:text-[#2B7BE5] mb-2 transition-colors" />
-                  {formData.resume ? (
-                    <span className="text-[#2B7BE5] text-sm font-medium">{formData.resume.name}</span>
-                  ) : (
-                    <>
-                      <span className="text-[#5A6A8A] text-sm">Drop your resume here or click to upload</span>
-                      <span className="text-[#5A6A8A]/60 text-xs mt-1">PDF, DOC, DOCX — max 10MB</span>
-                    </>
-                  )}
-                </label>
+                </div>
               </div>
+
+              {!isTraining && (
+                <>
+                  <div>
+                    <label className="block text-sm font-semibold text-[#0D1B3E] mb-2">Your Skills *</label>
+                    <input
+                      required
+                      type="text"
+                      placeholder="React, Java, PostgreSQL, Figma..."
+                      value={formData.skills}
+                      onChange={(e) => setFormData({ ...formData, skills: e.target.value })}
+                      className="w-full px-4 py-3 rounded-xl border border-[#0D1B3E]/15 bg-[#F8F9FB] text-[#0D1B3E] placeholder-[#5A6A8A]/60 focus:outline-none focus:ring-2 focus:ring-[#2B7BE5]/30 focus:border-[#2B7BE5] transition-all"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                      <label className="block text-sm font-semibold text-[#0D1B3E] mb-2">Portfolio Link (Optional)</label>
+                      <input
+                        type="url"
+                        placeholder="https://yourportfolio.com"
+                        value={formData.portfolio}
+                        onChange={(e) => setFormData({ ...formData, portfolio: e.target.value })}
+                        className="w-full px-4 py-3 rounded-xl border border-[#0D1B3E]/15 bg-[#F8F9FB] text-[#0D1B3E] placeholder-[#5A6A8A]/60 focus:outline-none focus:ring-2 focus:ring-[#2B7BE5]/30 focus:border-[#2B7BE5] transition-all"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-[#0D1B3E] mb-2">GitHub Link (Optional)</label>
+                      <input
+                        type="url"
+                        placeholder="https://github.com/yourusername"
+                        value={formData.github}
+                        onChange={(e) => setFormData({ ...formData, github: e.target.value })}
+                        className="w-full px-4 py-3 rounded-xl border border-[#0D1B3E]/15 bg-[#F8F9FB] text-[#0D1B3E] placeholder-[#5A6A8A]/60 focus:outline-none focus:ring-2 focus:ring-[#2B7BE5]/30 focus:border-[#2B7BE5] transition-all"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-[#0D1B3E] mb-2">Resume / CV *</label>
+                    <label className="flex flex-col items-center justify-center w-full h-36 rounded-xl border-2 border-dashed border-[#0D1B3E]/20 hover:border-[#2B7BE5]/50 bg-[#F8F9FB] cursor-pointer transition-all group">
+                      <input
+                        required
+                        type="file"
+                        accept=".pdf,.doc,.docx"
+                        className="hidden"
+                        onChange={(e) => setFormData({ ...formData, resume: e.target.files?.[0] || null })}
+                      />
+                      <Upload className="w-8 h-8 text-[#5A6A8A] group-hover:text-[#2B7BE5] mb-2 transition-colors" />
+                      {formData.resume ? (
+                        <span className="text-[#2B7BE5] text-sm font-medium">{formData.resume.name}</span>
+                      ) : (
+                        <>
+                          <span className="text-[#5A6A8A] text-sm">Drop your resume here or click to upload</span>
+                          <span className="text-[#5A6A8A]/60 text-xs mt-1">PDF, DOC, DOCX — max 10MB</span>
+                        </>
+                      )}
+                    </label>
+                  </div>
+                </>
+              )}
+
+              {isTraining && (
+                <div>
+                  <label className="block text-sm font-semibold text-[#0D1B3E] mb-2">Current Qualification *</label>
+                  <input
+                    required
+                    type="text"
+                    placeholder="B.Tech Computer Science, 3rd Year"
+                    value={formData.qualification}
+                    onChange={(e) => setFormData({ ...formData, qualification: e.target.value })}
+                    className="w-full px-4 py-3 rounded-xl border border-[#0D1B3E]/15 bg-[#F8F9FB] text-[#0D1B3E] placeholder-[#5A6A8A]/60 focus:outline-none focus:ring-2 focus:ring-[#2B7BE5]/30 focus:border-[#2B7BE5] transition-all"
+                  />
+                </div>
+              )}
 
               <button
                 type="submit"
                 className="w-full py-4 rounded-xl bg-[#2B7BE5] text-white font-semibold hover:bg-[#1E6DD4] transition-colors text-base shadow-lg shadow-[#2B7BE5]/20"
               >
-                Submit Application
+                {isTraining ? "Enroll Now" : "Apply Now"}
               </button>
             </form>
           )}
