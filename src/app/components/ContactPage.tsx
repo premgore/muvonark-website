@@ -59,8 +59,8 @@ export function ContactPage() {
             <h2 className="text-2xl text-[#0D1B3E] mb-6" style={{ fontFamily: "var(--font-display)", fontWeight: 700 }}>Get in touch</h2>
             <div className="space-y-5">
               {[
-                { icon: Mail, label: "Email", value: "hello@muvonark.com", href: "mailto:hello@muvonark.com" },
-                { icon: Phone, label: "Phone", value: "+91 98765 43210", href: "tel:+919876543210" },
+                { icon: Mail, label: "Email", value: "team@muvonark.com", href: "mailto:hello@muvonark.com" },
+                { icon: Phone, label: "Phone", value: "+91 7666760842", href: "tel:+917666760842" },
                 { icon: MapPin, label: "Location", value: "India — Remote-First", href: "#" },
               ].map((c) => (
                 <a
