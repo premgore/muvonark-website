@@ -1,7 +1,69 @@
-import { Rocket, Code2, Server, Database, Wrench, Cloud, Users, Briefcase, GraduationCap, ArrowRight, CheckCircle2 } from "lucide-react";
+import { useState } from "react";
+import { Rocket, Code2, Server, Database, Wrench, Cloud, Users, Briefcase, GraduationCap, ArrowRight, CheckCircle2, X } from "lucide-react";
 import { Link } from "react-router";
 
 export function AffiSpherePage() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    college: "",
+    yearOfStudy: "",
+    courseBranch: "",
+    skills: "",
+    whyJoin: ""
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    
+    try {
+      const payload = {
+        formType: "training-program",
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        college: formData.college,
+        yearOfStudy: formData.yearOfStudy,
+        courseBranch: formData.courseBranch,
+        skills: formData.skills,
+        whyJoin: formData.whyJoin,
+        submittedAt: new Date().toISOString()
+      };
+
+      const response = await fetch("https://script.google.com/macros/s/AKfycbwJ0Jb_doqnZnA-wsWyw6PVz_2V47t5FPw8M7134or7JutSLxZHwfphxMVDjVg2kkNZ/exec", {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(payload),
+      });
+
+      if (response.ok) {
+        setIsSuccess(true);
+      } else {
+        alert("Something went wrong. Please try again.");
+      }
+    } catch (error) {
+      alert("Something went wrong. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setTimeout(() => {
+      setIsSuccess(false);
+      setFormData({
+        name: "", email: "", phone: "", college: "",
+        yearOfStudy: "", courseBranch: "", skills: "", whyJoin: ""
+      });
+    }, 300);
+  };
+
   return (
     <div className="min-h-screen bg-[#F8F9FB] pt-20">
       {/* Hero Section */}
@@ -65,9 +127,9 @@ export function AffiSpherePage() {
               <p className="text-[#5A6A8A] flex-grow mb-8 leading-relaxed">
                 For candidates who are passionate about learning and want training before contributing to the project.
               </p>
-              <Link to="/careers?type=training" className="w-full py-4 rounded-xl bg-[#0D1B3E] text-white font-semibold hover:bg-[#1A2E63] transition-colors flex items-center justify-center gap-2">
+              <button onClick={() => setIsModalOpen(true)} className="w-full py-4 rounded-xl bg-[#0D1B3E] text-white font-semibold hover:bg-[#1A2E63] transition-colors flex items-center justify-center gap-2">
                 Join Training Program <ArrowRight className="w-4 h-4" />
-              </Link>
+              </button>
             </div>
           </div>
         </div>
@@ -205,6 +267,103 @@ export function AffiSpherePage() {
         </div>
 
       </div>
+
+      {/* Modal Overlay */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-start justify-center bg-[#0D1B3E]/60 p-4 md:p-6 backdrop-blur-sm overflow-y-auto">
+          <div className="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl mt-10 mb-10 overflow-hidden">
+            <button 
+              onClick={closeModal} 
+              className="absolute top-4 right-4 p-2 text-gray-400 hover:text-[#0D1B3E] rounded-full hover:bg-gray-100 transition-colors z-10"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            
+            <div className="p-8">
+              {isSuccess ? (
+                <div className="text-center py-10">
+                  <div className="w-16 h-16 rounded-2xl bg-emerald-100 flex items-center justify-center mx-auto mb-5">
+                    <CheckCircle2 className="w-8 h-8 text-emerald-600" />
+                  </div>
+                  <h3 className="text-2xl text-[#0D1B3E] mb-2" style={{ fontFamily: "var(--font-display)", fontWeight: 700 }}>
+                    Application Submitted!
+                  </h3>
+                  <p className="text-[#5A6A8A] max-w-md mx-auto mb-8">
+                    Thank you for applying to the Affisphere Training Program. Our team will review your application and get back to you within 48 hours. Keep an eye on your email.
+                  </p>
+                  <button onClick={closeModal} className="px-8 py-3 rounded-xl bg-[#0D1B3E] text-white font-semibold hover:bg-[#1A2E63] transition-colors">
+                    Close
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <div className="mb-6">
+                    <h3 className="text-2xl text-[#0D1B3E] mb-2" style={{ fontFamily: "var(--font-display)", fontWeight: 700 }}>
+                      Join Training Program
+                    </h3>
+                    <p className="text-[#5A6A8A] text-sm">
+                      Fill in your details below to apply.
+                    </p>
+                  </div>
+                  
+                  <form onSubmit={handleSubmit} className="space-y-5">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                      <div>
+                        <label className="block text-sm font-semibold text-[#0D1B3E] mb-2">Full Name *</label>
+                        <input required type="text" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} className="w-full px-4 py-3 rounded-xl border border-[#0D1B3E]/15 bg-[#F8F9FB] focus:outline-none focus:ring-2 focus:ring-[#2B7BE5]/30 focus:border-[#2B7BE5] transition-all" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-semibold text-[#0D1B3E] mb-2">Email Address *</label>
+                        <input required type="email" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} className="w-full px-4 py-3 rounded-xl border border-[#0D1B3E]/15 bg-[#F8F9FB] focus:outline-none focus:ring-2 focus:ring-[#2B7BE5]/30 focus:border-[#2B7BE5] transition-all" />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                      <div>
+                        <label className="block text-sm font-semibold text-[#0D1B3E] mb-2">Phone Number *</label>
+                        <input required type="tel" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} className="w-full px-4 py-3 rounded-xl border border-[#0D1B3E]/15 bg-[#F8F9FB] focus:outline-none focus:ring-2 focus:ring-[#2B7BE5]/30 focus:border-[#2B7BE5] transition-all" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-semibold text-[#0D1B3E] mb-2">College / University *</label>
+                        <input required type="text" value={formData.college} onChange={(e) => setFormData({...formData, college: e.target.value})} className="w-full px-4 py-3 rounded-xl border border-[#0D1B3E]/15 bg-[#F8F9FB] focus:outline-none focus:ring-2 focus:ring-[#2B7BE5]/30 focus:border-[#2B7BE5] transition-all" />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                      <div>
+                        <label className="block text-sm font-semibold text-[#0D1B3E] mb-2">Year of Study *</label>
+                        <select required value={formData.yearOfStudy} onChange={(e) => setFormData({...formData, yearOfStudy: e.target.value})} className="w-full px-4 py-3 rounded-xl border border-[#0D1B3E]/15 bg-[#F8F9FB] text-[#0D1B3E] focus:outline-none focus:ring-2 focus:ring-[#2B7BE5]/30 focus:border-[#2B7BE5] transition-all">
+                          <option value="" disabled>Select Year</option>
+                          <option value="1st Year">1st Year</option>
+                          <option value="2nd Year">2nd Year</option>
+                          <option value="3rd Year">3rd Year</option>
+                          <option value="4th Year">4th Year</option>
+                          <option value="Postgraduate">Postgraduate</option>
+                          <option value="Recent Graduate">Recent Graduate</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-semibold text-[#0D1B3E] mb-2">Course / Branch *</label>
+                        <input required type="text" placeholder="e.g. Computer Engineering" value={formData.courseBranch} onChange={(e) => setFormData({...formData, courseBranch: e.target.value})} className="w-full px-4 py-3 rounded-xl border border-[#0D1B3E]/15 bg-[#F8F9FB] focus:outline-none focus:ring-2 focus:ring-[#2B7BE5]/30 focus:border-[#2B7BE5] transition-all" />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-[#0D1B3E] mb-2">Skills / Technologies known *</label>
+                      <input required type="text" placeholder="e.g. React, Node.js, SQL" value={formData.skills} onChange={(e) => setFormData({...formData, skills: e.target.value})} className="w-full px-4 py-3 rounded-xl border border-[#0D1B3E]/15 bg-[#F8F9FB] focus:outline-none focus:ring-2 focus:ring-[#2B7BE5]/30 focus:border-[#2B7BE5] transition-all" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-[#0D1B3E] mb-2">Why do you want to join this training? *</label>
+                      <textarea required rows={4} value={formData.whyJoin} onChange={(e) => setFormData({...formData, whyJoin: e.target.value})} className="w-full px-4 py-3 rounded-xl border border-[#0D1B3E]/15 bg-[#F8F9FB] focus:outline-none focus:ring-2 focus:ring-[#2B7BE5]/30 focus:border-[#2B7BE5] transition-all resize-none"></textarea>
+                    </div>
+                    <button type="submit" disabled={isSubmitting} className="w-full py-4 rounded-xl bg-[#2B7BE5] text-white font-semibold hover:bg-[#1E6DD4] transition-colors disabled:opacity-70 disabled:cursor-not-allowed">
+                      {isSubmitting ? "Submitting..." : "Submit Application"}
+                    </button>
+                  </form>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
