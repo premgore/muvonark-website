@@ -20,7 +20,7 @@ export function AffiSpherePage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
+
     try {
       const payload = {
         formType: "training-program",
@@ -35,7 +35,7 @@ export function AffiSpherePage() {
         submittedAt: new Date().toISOString()
       };
 
-      const response = await fetch("https://script.google.com/macros/s/AKfycbwJ0Jb_doqnZnA-wsWyw6PVz_2V47t5FPw8M7134or7JutSLxZHwfphxMVDjVg2kkNZ/exec", {
+      const response = await fetch("https://script.google.com/macros/s/AKfycbzIsJ-5u7b5fpky2bx2uiMZqXUlImY4K6H4KvUjbo-K2zxbyaKGkfGCcqix4ZwIK8CB/exec", {
         method: "POST",
         headers: { "Content-Type": "text/plain;charset=utf-8" },
         body: JSON.stringify(payload),
@@ -97,7 +97,7 @@ export function AffiSpherePage() {
       </div>
 
       <div className="max-w-7xl mx-auto px-6 lg:px-8 py-16">
-        
+
         {/* Selection Paths */}
         <div className="mb-20">
           <h2 className="text-3xl text-[#0D1B3E] mb-8" style={{ fontFamily: "var(--font-display)", fontWeight: 700 }}>
@@ -152,7 +152,7 @@ export function AffiSpherePage() {
                 <li>• Tailwind CSS</li>
               </ul>
             </div>
-            
+
             <div className="bg-white p-6 rounded-2xl border border-[#0D1B3E]/10">
               <div className="flex items-center gap-3 mb-4">
                 <Server className="w-6 h-6 text-[#2B7BE5]" />
@@ -272,13 +272,13 @@ export function AffiSpherePage() {
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-start justify-center bg-[#0D1B3E]/60 p-4 md:p-6 backdrop-blur-sm overflow-y-auto">
           <div className="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl mt-10 mb-10 overflow-hidden">
-            <button 
-              onClick={closeModal} 
+            <button
+              onClick={closeModal}
               className="absolute top-4 right-4 p-2 text-gray-400 hover:text-[#0D1B3E] rounded-full hover:bg-gray-100 transition-colors z-10"
             >
               <X className="w-5 h-5" />
             </button>
-            
+
             <div className="p-8">
               {isSuccess ? (
                 <div className="text-center py-10">
@@ -305,32 +305,32 @@ export function AffiSpherePage() {
                       Fill in your details below to apply.
                     </p>
                   </div>
-                  
+
                   <form onSubmit={handleSubmit} className="space-y-5">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                       <div>
                         <label className="block text-sm font-semibold text-[#0D1B3E] mb-2">Full Name *</label>
-                        <input required type="text" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} className="w-full px-4 py-3 rounded-xl border border-[#0D1B3E]/15 bg-[#F8F9FB] focus:outline-none focus:ring-2 focus:ring-[#2B7BE5]/30 focus:border-[#2B7BE5] transition-all" />
+                        <input required type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="w-full px-4 py-3 rounded-xl border border-[#0D1B3E]/15 bg-[#F8F9FB] focus:outline-none focus:ring-2 focus:ring-[#2B7BE5]/30 focus:border-[#2B7BE5] transition-all" />
                       </div>
                       <div>
                         <label className="block text-sm font-semibold text-[#0D1B3E] mb-2">Email Address *</label>
-                        <input required type="email" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} className="w-full px-4 py-3 rounded-xl border border-[#0D1B3E]/15 bg-[#F8F9FB] focus:outline-none focus:ring-2 focus:ring-[#2B7BE5]/30 focus:border-[#2B7BE5] transition-all" />
+                        <input required type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} className="w-full px-4 py-3 rounded-xl border border-[#0D1B3E]/15 bg-[#F8F9FB] focus:outline-none focus:ring-2 focus:ring-[#2B7BE5]/30 focus:border-[#2B7BE5] transition-all" />
                       </div>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                       <div>
                         <label className="block text-sm font-semibold text-[#0D1B3E] mb-2">Phone Number *</label>
-                        <input required type="tel" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} className="w-full px-4 py-3 rounded-xl border border-[#0D1B3E]/15 bg-[#F8F9FB] focus:outline-none focus:ring-2 focus:ring-[#2B7BE5]/30 focus:border-[#2B7BE5] transition-all" />
+                        <input required type="tel" value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} className="w-full px-4 py-3 rounded-xl border border-[#0D1B3E]/15 bg-[#F8F9FB] focus:outline-none focus:ring-2 focus:ring-[#2B7BE5]/30 focus:border-[#2B7BE5] transition-all" />
                       </div>
                       <div>
                         <label className="block text-sm font-semibold text-[#0D1B3E] mb-2">College / University *</label>
-                        <input required type="text" value={formData.college} onChange={(e) => setFormData({...formData, college: e.target.value})} className="w-full px-4 py-3 rounded-xl border border-[#0D1B3E]/15 bg-[#F8F9FB] focus:outline-none focus:ring-2 focus:ring-[#2B7BE5]/30 focus:border-[#2B7BE5] transition-all" />
+                        <input required type="text" value={formData.college} onChange={(e) => setFormData({ ...formData, college: e.target.value })} className="w-full px-4 py-3 rounded-xl border border-[#0D1B3E]/15 bg-[#F8F9FB] focus:outline-none focus:ring-2 focus:ring-[#2B7BE5]/30 focus:border-[#2B7BE5] transition-all" />
                       </div>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                       <div>
                         <label className="block text-sm font-semibold text-[#0D1B3E] mb-2">Year of Study *</label>
-                        <select required value={formData.yearOfStudy} onChange={(e) => setFormData({...formData, yearOfStudy: e.target.value})} className="w-full px-4 py-3 rounded-xl border border-[#0D1B3E]/15 bg-[#F8F9FB] text-[#0D1B3E] focus:outline-none focus:ring-2 focus:ring-[#2B7BE5]/30 focus:border-[#2B7BE5] transition-all">
+                        <select required value={formData.yearOfStudy} onChange={(e) => setFormData({ ...formData, yearOfStudy: e.target.value })} className="w-full px-4 py-3 rounded-xl border border-[#0D1B3E]/15 bg-[#F8F9FB] text-[#0D1B3E] focus:outline-none focus:ring-2 focus:ring-[#2B7BE5]/30 focus:border-[#2B7BE5] transition-all">
                           <option value="" disabled>Select Year</option>
                           <option value="1st Year">1st Year</option>
                           <option value="2nd Year">2nd Year</option>
@@ -342,16 +342,16 @@ export function AffiSpherePage() {
                       </div>
                       <div>
                         <label className="block text-sm font-semibold text-[#0D1B3E] mb-2">Course / Branch *</label>
-                        <input required type="text" placeholder="e.g. Computer Engineering" value={formData.courseBranch} onChange={(e) => setFormData({...formData, courseBranch: e.target.value})} className="w-full px-4 py-3 rounded-xl border border-[#0D1B3E]/15 bg-[#F8F9FB] focus:outline-none focus:ring-2 focus:ring-[#2B7BE5]/30 focus:border-[#2B7BE5] transition-all" />
+                        <input required type="text" placeholder="e.g. Computer Engineering" value={formData.courseBranch} onChange={(e) => setFormData({ ...formData, courseBranch: e.target.value })} className="w-full px-4 py-3 rounded-xl border border-[#0D1B3E]/15 bg-[#F8F9FB] focus:outline-none focus:ring-2 focus:ring-[#2B7BE5]/30 focus:border-[#2B7BE5] transition-all" />
                       </div>
                     </div>
                     <div>
                       <label className="block text-sm font-semibold text-[#0D1B3E] mb-2">Skills / Technologies known *</label>
-                      <input required type="text" placeholder="e.g. React, Node.js, SQL" value={formData.skills} onChange={(e) => setFormData({...formData, skills: e.target.value})} className="w-full px-4 py-3 rounded-xl border border-[#0D1B3E]/15 bg-[#F8F9FB] focus:outline-none focus:ring-2 focus:ring-[#2B7BE5]/30 focus:border-[#2B7BE5] transition-all" />
+                      <input required type="text" placeholder="e.g. React, Node.js, SQL" value={formData.skills} onChange={(e) => setFormData({ ...formData, skills: e.target.value })} className="w-full px-4 py-3 rounded-xl border border-[#0D1B3E]/15 bg-[#F8F9FB] focus:outline-none focus:ring-2 focus:ring-[#2B7BE5]/30 focus:border-[#2B7BE5] transition-all" />
                     </div>
                     <div>
                       <label className="block text-sm font-semibold text-[#0D1B3E] mb-2">Why do you want to join this training? *</label>
-                      <textarea required rows={4} value={formData.whyJoin} onChange={(e) => setFormData({...formData, whyJoin: e.target.value})} className="w-full px-4 py-3 rounded-xl border border-[#0D1B3E]/15 bg-[#F8F9FB] focus:outline-none focus:ring-2 focus:ring-[#2B7BE5]/30 focus:border-[#2B7BE5] transition-all resize-none"></textarea>
+                      <textarea required rows={4} value={formData.whyJoin} onChange={(e) => setFormData({ ...formData, whyJoin: e.target.value })} className="w-full px-4 py-3 rounded-xl border border-[#0D1B3E]/15 bg-[#F8F9FB] focus:outline-none focus:ring-2 focus:ring-[#2B7BE5]/30 focus:border-[#2B7BE5] transition-all resize-none"></textarea>
                     </div>
                     <button type="submit" disabled={isSubmitting} className="w-full py-4 rounded-xl bg-[#2B7BE5] text-white font-semibold hover:bg-[#1E6DD4] transition-colors disabled:opacity-70 disabled:cursor-not-allowed">
                       {isSubmitting ? "Submitting..." : "Submit Application"}
