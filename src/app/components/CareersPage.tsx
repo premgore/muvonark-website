@@ -2,6 +2,9 @@ import { useState, useEffect } from "react";
 import { Briefcase, Clock, GraduationCap, ArrowRight, Upload, CheckCircle2, Users, Star } from "lucide-react";
 import { Link, useSearchParams, useLocation } from "react-router";
 
+const TRAINING_PROGRAM_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwA5aPgjeDNQFRKTXQydYMH2FywsNfNqvPh10q-hK3bk4Kf5qbuGM9ry-MgAHe2on0/exec";
+const CAREERS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwv4J5aiPFdsDzCR7nggJe8GP8JmBzPl5eVE8m6bteO4pk1j5Xqm-7C1pp2DiZ9hNsK/exec";
+
 const jobListings = [
   { type: "full-time", role: "Senior Full-Stack Developer", skills: ["React", "Node.js", "PostgreSQL"], location: "Remote / India" },
   { type: "full-time", role: "DevOps Engineer", skills: ["AWS", "Docker", "Kubernetes", "Terraform"], location: "Remote / India" },
@@ -33,6 +36,8 @@ export function CareersPage() {
     name: "", email: "", phone: "", college: "",
     skills: "", portfolio: "", github: "",
     qualification: "", resume: null as File | null,
+    // Training specific
+    yearOfStudy: "", courseBranch: "", whyJoin: ""
   });
   const [submitted, setSubmitted] = useState(false);
 
@@ -52,11 +57,40 @@ export function CareersPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      if (isTraining) {
+        const payload = {
+          formType: "training-program",
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          college: formData.college,
+          yearOfStudy: formData.yearOfStudy,
+          courseBranch: formData.courseBranch,
+          skills: formData.skills,
+          whyJoin: formData.whyJoin,
+          submittedAt: new Date().toISOString()
+        };
+
+        const response = await fetch(TRAINING_PROGRAM_SCRIPT_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload),
+        });
+
+        if (response.ok) {
+          setSubmitted(true);
+        } else {
+          alert("Something went wrong. Please try again.");
+        }
+        return;
+      }
+
+      // Careers form submission
       let resumeBase64 = "";
       let resumeFileName = "";
       let resumeMimeType = "";
 
-      if (!isTraining && formData.resume) {
+      if (formData.resume) {
         resumeFileName = formData.resume.name;
         resumeMimeType = formData.resume.type;
         resumeBase64 = await new Promise((resolve, reject) => {
@@ -70,14 +104,14 @@ export function CareersPage() {
         });
       }
 
-      const { resume, ...restFormData } = formData;
+      const { resume, yearOfStudy, courseBranch, whyJoin, ...restFormData } = formData;
       const body = {
-        formType: isTraining ? "training" : "careers",
+        formType: "careers",
         ...restFormData,
         ...(resumeBase64 && { resumeBase64, resumeFileName, resumeMimeType }),
       };
 
-      const response = await fetch("https://script.google.com/macros/s/AKfycbwv4J5aiPFdsDzCR7nggJe8GP8JmBzPl5eVE8m6bteO4pk1j5Xqm-7C1pp2DiZ9hNsK/exec", {
+      const response = await fetch(CAREERS_SCRIPT_URL, {
         method: "POST",
         headers: { "Content-Type": "text/plain;charset=utf-8" },
         body: JSON.stringify(body),
@@ -229,15 +263,15 @@ export function CareersPage() {
                 <CheckCircle2 className="w-8 h-8 text-emerald-600" />
               </div>
               <h3 className="text-2xl text-[#0D1B3E] mb-2" style={{ fontFamily: "var(--font-display)", fontWeight: 700 }}>
-                {isTraining ? "Enrollment Received!" : "Application Received!"}
+                {isTraining ? "Application Submitted!" : "Application Received!"}
               </h3>
               <p className="text-[#5A6A8A] max-w-md mx-auto mb-6">
                 {isTraining 
-                  ? "Thank you for enrolling in the AffiSphere Training Program. Our team will contact you shortly with further instructions regarding onboarding and training."
+                  ? "Thank you for applying to the Affisphere Training Program. Our team will review your application and get back to you within 48 hours. Keep an eye on your email."
                   : "Thank you for applying to AffiSphere. Our team will review your application and contact you shortly regarding the interview process."}
               </p>
-              <button onClick={() => setSubmitted(false)} className="text-[#2B7BE5] font-semibold">
-                Submit another {isTraining ? "enrollment" : "application"}
+              <button onClick={() => setSubmitted(false)} className={isTraining ? "px-6 py-2.5 rounded-xl bg-[#0D1B3E] text-white font-semibold hover:bg-[#1A2E63] transition-colors" : "text-[#2B7BE5] font-semibold"}>
+                {isTraining ? "Close" : "Submit another application"}
               </button>
             </div>
           ) : (
@@ -269,7 +303,7 @@ export function CareersPage() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
-                  <label className="block text-sm font-semibold text-[#0D1B3E] mb-2">Mobile Number *</label>
+                  <label className="block text-sm font-semibold text-[#0D1B3E] mb-2">Phone Number *</label>
                   <input
                     required
                     type="tel"
@@ -280,7 +314,7 @@ export function CareersPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-[#0D1B3E] mb-2">College Name *</label>
+                  <label className="block text-sm font-semibold text-[#0D1B3E] mb-2">College / University *</label>
                   <input
                     required
                     type="text"
@@ -292,7 +326,62 @@ export function CareersPage() {
                 </div>
               </div>
 
-              {!isTraining && (
+              {isTraining ? (
+                <>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                      <label className="block text-sm font-semibold text-[#0D1B3E] mb-2">Year of Study *</label>
+                      <select
+                        required
+                        value={formData.yearOfStudy}
+                        onChange={(e) => setFormData({ ...formData, yearOfStudy: e.target.value })}
+                        className="w-full px-4 py-3 rounded-xl border border-[#0D1B3E]/15 bg-[#F8F9FB] text-[#0D1B3E] focus:outline-none focus:ring-2 focus:ring-[#2B7BE5]/30 focus:border-[#2B7BE5] transition-all"
+                      >
+                        <option value="">Select Year</option>
+                        <option value="1st Year">1st Year</option>
+                        <option value="2nd Year">2nd Year</option>
+                        <option value="3rd Year">3rd Year</option>
+                        <option value="4th Year">4th Year</option>
+                        <option value="Postgraduate">Postgraduate</option>
+                        <option value="Recent Graduate">Recent Graduate</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-[#0D1B3E] mb-2">Course / Branch *</label>
+                      <input
+                        required
+                        type="text"
+                        placeholder="e.g. B.Tech Computer Science"
+                        value={formData.courseBranch}
+                        onChange={(e) => setFormData({ ...formData, courseBranch: e.target.value })}
+                        className="w-full px-4 py-3 rounded-xl border border-[#0D1B3E]/15 bg-[#F8F9FB] text-[#0D1B3E] placeholder-[#5A6A8A]/60 focus:outline-none focus:ring-2 focus:ring-[#2B7BE5]/30 focus:border-[#2B7BE5] transition-all"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-[#0D1B3E] mb-2">Your Skills *</label>
+                    <input
+                      required
+                      type="text"
+                      placeholder="React, Java, PostgreSQL, Figma..."
+                      value={formData.skills}
+                      onChange={(e) => setFormData({ ...formData, skills: e.target.value })}
+                      className="w-full px-4 py-3 rounded-xl border border-[#0D1B3E]/15 bg-[#F8F9FB] text-[#0D1B3E] placeholder-[#5A6A8A]/60 focus:outline-none focus:ring-2 focus:ring-[#2B7BE5]/30 focus:border-[#2B7BE5] transition-all"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-[#0D1B3E] mb-2">Why do you want to join this training? *</label>
+                    <textarea
+                      required
+                      rows={4}
+                      placeholder="Tell us why you are interested in this training..."
+                      value={formData.whyJoin}
+                      onChange={(e) => setFormData({ ...formData, whyJoin: e.target.value })}
+                      className="w-full px-4 py-3 rounded-xl border border-[#0D1B3E]/15 bg-[#F8F9FB] text-[#0D1B3E] placeholder-[#5A6A8A]/60 focus:outline-none focus:ring-2 focus:ring-[#2B7BE5]/30 focus:border-[#2B7BE5] transition-all resize-none"
+                    />
+                  </div>
+                </>
+              ) : (
                 <>
                   <div>
                     <label className="block text-sm font-semibold text-[#0D1B3E] mb-2">Your Skills *</label>
@@ -351,20 +440,6 @@ export function CareersPage() {
                     </label>
                   </div>
                 </>
-              )}
-
-              {isTraining && (
-                <div>
-                  <label className="block text-sm font-semibold text-[#0D1B3E] mb-2">Current Qualification *</label>
-                  <input
-                    required
-                    type="text"
-                    placeholder="B.Tech Computer Science, 3rd Year"
-                    value={formData.qualification}
-                    onChange={(e) => setFormData({ ...formData, qualification: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl border border-[#0D1B3E]/15 bg-[#F8F9FB] text-[#0D1B3E] placeholder-[#5A6A8A]/60 focus:outline-none focus:ring-2 focus:ring-[#2B7BE5]/30 focus:border-[#2B7BE5] transition-all"
-                  />
-                </div>
               )}
 
               <button
