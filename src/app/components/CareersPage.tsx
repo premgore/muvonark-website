@@ -1,91 +1,66 @@
 import { useState, useEffect } from "react";
-import { Briefcase, Clock, GraduationCap, ArrowRight, Upload, CheckCircle2, Users, Star } from "lucide-react";
-import { Link, useSearchParams, useLocation } from "react-router";
+import { useLocation } from "react-router";
+import { 
+  Briefcase, Clock, GraduationCap, ArrowRight, Upload, 
+  CheckCircle2, Users, Star, Sparkles, Code2, Terminal, ShieldCheck 
+} from "lucide-react";
 
-const TRAINING_PROGRAM_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwA5aPgjeDNQFRKTXQydYMH2FywsNfNqvPh10q-hK3bk4Kf5qbuGM9ry-MgAHe2on0/exec";
 const CAREERS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwv4J5aiPFdsDzCR7nggJe8GP8JmBzPl5eVE8m6bteO4pk1j5Xqm-7C1pp2DiZ9hNsK/exec";
 
-const jobListings = [
-  { type: "full-time", role: "Senior Full-Stack Developer", skills: ["React", "Node.js", "PostgreSQL"], location: "Remote / India" },
-  { type: "full-time", role: "DevOps Engineer", skills: ["AWS", "Docker", "Kubernetes", "Terraform"], location: "Remote / India" },
-  { type: "full-time", role: "Senior UI/UX Designer", skills: ["Figma", "User Research", "Design Systems"], location: "Remote / India" },
-  { type: "full-time", role: "Backend Engineer (Python)", skills: ["FastAPI", "Django", "PostgreSQL", "Redis"], location: "Remote / India" },
-  { type: "part-time", role: "Frontend Developer", skills: ["React", "TypeScript", "Tailwind CSS"], location: "Remote" },
-  { type: "part-time", role: "Data Analyst", skills: ["Python", "SQL", "Tableau", "Power BI"], location: "Remote" },
-  { type: "internship", role: "Frontend Developer Intern", skills: ["HTML/CSS", "JavaScript", "React basics"], location: "Remote" },
-  { type: "internship", role: "Backend Developer Intern", skills: ["Python or Node.js", "SQL", "REST APIs"], location: "Remote" },
-  { type: "internship", role: "UI/UX Design Intern", skills: ["Figma", "Wireframing", "Basic Prototyping"], location: "Remote" },
-  { type: "internship", role: "Data Science Intern", skills: ["Python", "Pandas", "Basic ML"], location: "Remote" },
+interface JobListing {
+  type: "full-time" | "part-time" | "internship";
+  role: string;
+  department: string;
+  skills: string[];
+  location: string;
+}
+
+const jobListings: JobListing[] = [
+  { type: "full-time", department: "AI & ML", role: "AI Systems & Agentic Engineer", skills: ["Python", "LangGraph", "FastAPI", "pgvector", "RAG"], location: "Remote / India" },
+  { type: "full-time", department: "Frontend", role: "Senior Frontend Engineer (React 19/Next.js)", skills: ["React", "TypeScript", "Tailwind CSS", "Vite", "Motion"], location: "Remote / India" },
+  { type: "full-time", department: "Backend", role: "Distributed Backend Engineer", skills: ["Spring Boot", "Go / Node.js", "PostgreSQL", "Kafka"], location: "Remote / India" },
+  { type: "full-time", department: "Infrastructure", role: "Cloud & DevOps Reliability Engineer", skills: ["AWS", "Docker", "Terraform", "CI/CD"], location: "Remote / India" },
+  { type: "part-time", department: "Frontend", role: "Frontend UI Specialist", skills: ["React", "TypeScript", "Tailwind CSS"], location: "Remote" },
+  { type: "part-time", department: "AI & ML", role: "Applied AI Research Contributor", skills: ["Python", "LoRA Fine-Tuning", "Vector Search"], location: "Remote" },
+  { type: "internship", department: "AI & ML", role: "AI Systems Engineering Intern", skills: ["Python", "FastAPI", "LLM APIs", "SQL"], location: "Remote" },
+  { type: "internship", department: "Frontend", role: "Frontend Development Intern", skills: ["React", "TypeScript", "Tailwind CSS"], location: "Remote" },
+  { type: "internship", department: "Backend", role: "Backend Systems Intern", skills: ["Java / Node.js", "PostgreSQL", "REST APIs"], location: "Remote" },
+  { type: "internship", department: "Product", role: "UI/UX Product Design Intern", skills: ["Figma", "Design Systems", "Prototyping"], location: "Remote" },
 ];
 
-const jobTypeConfig = {
-  "full-time": { label: "Full-Time", icon: Briefcase, color: "bg-[#0D1B3E] text-white" },
-  "part-time": { label: "Part-Time", icon: Clock, color: "bg-[#EBF1FC] text-[#2B7BE5]" },
-  "internship": { label: "Internship", icon: GraduationCap, color: "bg-[#EEF1F6] text-[#5A6A8A]" },
-};
-
-const filterTypes = ["all", "full-time", "part-time", "internship"] as const;
-
 export function CareersPage() {
-  const [searchParams] = useSearchParams();
   const { hash } = useLocation();
-  const isTraining = searchParams.get("type") === "training";
-
   const [filter, setFilter] = useState<string>("all");
   const [formData, setFormData] = useState({
-    name: "", email: "", phone: "", college: "",
-    skills: "", portfolio: "", github: "",
-    qualification: "", resume: null as File | null,
-    // Training specific
-    yearOfStudy: "", courseBranch: "", whyJoin: ""
+    name: "",
+    email: "",
+    phone: "",
+    college: "",
+    skills: "",
+    portfolio: "",
+    github: "",
+    qualification: "",
+    resume: null as File | null,
   });
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    if (isTraining || hash === "#apply") {
+    if (hash === "#apply") {
       setTimeout(() => {
-        const applySection = document.getElementById("apply");
-        if (applySection) {
-          applySection.scrollIntoView({ behavior: "smooth" });
-        }
+        const applyEl = document.getElementById("apply");
+        if (applyEl) applyEl.scrollIntoView({ behavior: "smooth" });
       }, 100);
     }
-  }, [isTraining, hash]);
+  }, [hash]);
 
-  const filtered = filter === "all" ? jobListings : jobListings.filter((j) => j.type === filter);
+  const filtered = filter === "all" ? jobListings : jobListings.filter(j => j.type === filter);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
+
     try {
-      if (isTraining) {
-        const payload = {
-          formType: "training-program",
-          name: formData.name,
-          email: formData.email,
-          phone: formData.phone,
-          college: formData.college,
-          yearOfStudy: formData.yearOfStudy,
-          courseBranch: formData.courseBranch,
-          skills: formData.skills,
-          whyJoin: formData.whyJoin,
-          submittedAt: new Date().toISOString()
-        };
-
-        const response = await fetch(TRAINING_PROGRAM_SCRIPT_URL, {
-          method: "POST",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify(payload),
-        });
-
-        if (response.ok) {
-          setSubmitted(true);
-        } else {
-          alert("Something went wrong. Please try again.");
-        }
-        return;
-      }
-
-      // Careers form submission
       let resumeBase64 = "";
       let resumeFileName = "";
       let resumeMimeType = "";
@@ -100,358 +75,306 @@ export function CareersPage() {
             const base64String = (reader.result as string).split(",")[1];
             resolve(base64String);
           };
-          reader.onerror = (error) => reject(error);
+          reader.onerror = (err) => reject(err);
         });
       }
 
-      const { resume, yearOfStudy, courseBranch, whyJoin, ...restFormData } = formData;
+      const { resume, ...restFormData } = formData;
       const body = {
         formType: "careers",
         ...restFormData,
         ...(resumeBase64 && { resumeBase64, resumeFileName, resumeMimeType }),
+        submittedAt: new Date().toISOString()
       };
 
-      const response = await fetch(CAREERS_SCRIPT_URL, {
+      await fetch(CAREERS_SCRIPT_URL, {
         method: "POST",
         headers: { "Content-Type": "text/plain;charset=utf-8" },
         body: JSON.stringify(body),
       });
 
-      if (response.ok) {
-        setSubmitted(true);
-      } else {
-        alert("Something went wrong. Please try again.");
-      }
-    } catch (error) {
-      alert("Something went wrong. Please try again.");
+      setSubmitted(true);
+    } catch {
+      setSubmitted(true);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
+  const whyMuvonark = [
+    {
+      title: "Build",
+      tagline: "Work on products instead of only isolated tasks",
+      desc: "Move closer to the whole system. You will understand how business logic, AI models, and customer interfaces interlock in production.",
+      icon: Terminal
+    },
+    {
+      title: "Experiment",
+      tagline: "Explore emerging technologies",
+      desc: "We actively test modern AI agent loops, vector retrieval architectures, and local models rather than sticking to legacy dogma.",
+      icon: Sparkles
+    },
+    {
+      title: "Own",
+      tagline: "Take responsibility for meaningful parts of a system",
+      desc: "No bureaucratic red tape. You have ownership over real modules, architectures, and features shipped directly to users.",
+      icon: ShieldCheck
+    },
+    {
+      title: "Learn",
+      tagline: "Grow through real engineering and research",
+      desc: "Learn from working professionals and senior advisors with decades of real-world enterprise engineering experience.",
+      icon: GraduationCap
+    }
+  ];
+
   return (
-    <div className="min-h-screen bg-[#F8F9FB] pt-20">
-      {/* Hero */}
-      <div className="bg-[#0D1B3E] py-20 relative overflow-hidden">
-        <div className="absolute inset-0">
-          <img
-            src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1600&h=600&fit=crop&auto=format"
-            alt="Team collaboration"
-            className="w-full h-full object-cover opacity-15"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#0D1B3E] via-[#0D1B3E]/90 to-[#0D1B3E]/70" />
+    <div className="min-h-screen bg-[#070B14] text-slate-100 pt-28 pb-20">
+      {/* Hero Header */}
+      <div className="max-w-7xl mx-auto px-6 lg:px-8 mb-16 space-y-6">
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-xs font-mono text-cyan-300">
+          <span className="w-2 h-2 rounded-full bg-cyan-400" />
+          <span>Talent & Careers</span>
         </div>
-        <div className="max-w-7xl mx-auto px-6 lg:px-8 relative">
-          <p className="text-[#2B7BE5] text-sm font-semibold uppercase tracking-widest mb-4">Careers</p>
-          <h1 className="text-5xl lg:text-6xl text-white mb-5 max-w-3xl" style={{ fontFamily: "var(--font-display)", fontWeight: 700 }}>
-            Build real things. Grow with us.
+
+        <div className="space-y-4 max-w-3xl">
+          <h1 
+            className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-tight"
+            style={{ fontFamily: "var(--font-display)" }}
+          >
+            Build Real Things. Grow With Us.
           </h1>
-          <p className="text-white/50 text-lg max-w-2xl mb-8 leading-relaxed">
-            Whether you're a working professional or a student looking for your first real project — Muvonark has a place for you. We work on live client projects, not practice runs.
+          <p className="text-slate-300 text-base sm:text-lg leading-relaxed">
+            Muvonark is an AI-first technology company where you move closer to the problem, the product, and the technology.
           </p>
-          <div className="flex flex-wrap gap-6">
-            {[
-              { icon: Users, label: "150+ team members" },
-              { icon: Star, label: "Real projects, real impact" },
-              { icon: CheckCircle2, label: "Remote-first culture" },
-            ].map((item) => (
-              <div key={item.label} className="flex items-center gap-2">
-                <item.icon className="w-4 h-4 text-[#2B7BE5]" />
-                <span className="text-white/60 text-sm">{item.label}</span>
-              </div>
-            ))}
-          </div>
         </div>
       </div>
 
-      {/* Student Program Banner */}
-      <div id="students" className="bg-[#2B7BE5] py-10">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <GraduationCap className="w-5 h-5 text-white" />
-              <span className="text-white font-semibold">Student Contributor Program</span>
-            </div>
-            <p className="text-white/70 text-sm">
-              We're one of very few companies in India where students work on real, client-facing production projects — not internal practice tools.
-            </p>
-          </div>
-          <a href="#apply" className="flex-shrink-0 px-6 py-3 rounded-xl bg-white text-[#2B7BE5] font-semibold text-sm hover:bg-white/90 transition-colors">
-            Apply as Student
-          </a>
-        </div>
-      </div>
-
-      {/* Open Roles */}
-      <section className="py-20">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <div className="mb-10">
-            <p className="text-[#2B7BE5] text-sm font-semibold uppercase tracking-widest mb-3">Open Positions</p>
-            <h2 className="text-4xl text-[#0D1B3E]" style={{ fontFamily: "var(--font-display)", fontWeight: 700 }}>Find your place at Muvonark</h2>
+      {/* Why Muvonark (4 Core Ideas) */}
+      <div className="max-w-7xl mx-auto px-6 lg:px-8 space-y-20">
+        <div className="space-y-6">
+          <div className="pb-4 border-b border-white/10">
+            <span className="text-xs font-mono uppercase tracking-widest text-cyan-400">Culture & Philosophy</span>
+            <h2 className="text-2xl sm:text-3xl font-bold text-white mt-1">Why Build at Muvonark?</h2>
           </div>
 
-          {/* Filter */}
-          <div className="flex flex-wrap gap-3 mb-10">
-            {filterTypes.map((t) => (
-              <button
-                key={t}
-                onClick={() => setFilter(t)}
-                className={`px-5 py-2 rounded-full text-sm font-semibold capitalize transition-all ${filter === t
-                  ? "bg-[#0D1B3E] text-white"
-                  : "bg-white text-[#5A6A8A] border border-[#0D1B3E]/10 hover:border-[#2B7BE5]/30 hover:text-[#2B7BE5]"
-                  }`}
-              >
-                {t === "all" ? "All Roles" : t.replace("-", " ")}
-              </button>
-            ))}
-          </div>
-
-          <div className="space-y-3">
-            {filtered.map((job, i) => {
-              const tc = jobTypeConfig[job.type as keyof typeof jobTypeConfig];
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {whyMuvonark.map((w, i) => {
+              const Icon = w.icon;
               return (
-                <a
-                  key={i}
-                  href="#apply"
-                  className="group flex flex-col sm:flex-row sm:items-center justify-between p-5 bg-white rounded-2xl border border-[#0D1B3E]/8 hover:border-[#2B7BE5]/30 hover:shadow-lg hover:shadow-[#0D1B3E]/5 transition-all gap-4"
-                >
-                  <div className="flex items-start gap-4">
-                    <div className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 flex-shrink-0 ${tc.color}`}>
-                      <tc.icon className="w-3.5 h-3.5" />
-                      {tc.label}
+                <div key={i} className="p-6 rounded-2xl glass-panel border border-white/10 hover:border-cyan-500/30 transition-all space-y-3 flex flex-col justify-between">
+                  <div className="space-y-3">
+                    <div className="p-3 rounded-xl bg-cyan-500/10 text-cyan-400 w-fit">
+                      <Icon className="w-5 h-5" />
                     </div>
                     <div>
-                      <h3 className="text-[#0D1B3E] font-semibold mb-1" style={{ fontFamily: "var(--font-display)" }}>{job.role}</h3>
-                      <div className="flex flex-wrap gap-2">
-                        {job.skills.map((s) => (
-                          <span key={s} className="px-2 py-0.5 rounded bg-[#EEF1F6] text-[#5A6A8A] text-xs">{s}</span>
-                        ))}
-                      </div>
+                      <h3 className="text-xl font-bold text-white">{w.title}</h3>
+                      <p className="text-xs font-mono text-cyan-400 mt-0.5">{w.tagline}</p>
                     </div>
+                    <p className="text-xs text-slate-300 leading-relaxed">{w.desc}</p>
                   </div>
-                  <div className="flex items-center gap-4 ml-auto">
-                    <span className="text-[#5A6A8A] text-sm hidden md:block">{job.location}</span>
-                    <div className="flex items-center gap-1 text-[#2B7BE5] text-sm font-semibold whitespace-nowrap group-hover:gap-2 transition-all">
-                      Apply <ArrowRight className="w-3.5 h-3.5" />
-                    </div>
-                  </div>
-                </a>
+                </div>
               );
             })}
           </div>
         </div>
-      </section>
 
-      {/* Application Form */}
-      <section id="apply" className="py-20 bg-white">
-        <div className="max-w-4xl mx-auto px-6 lg:px-8">
-          <div className="mb-10">
-            <p className="text-[#2B7BE5] text-sm font-semibold uppercase tracking-widest mb-3">
-              {isTraining ? "Training Program" : "Apply Now"}
-            </p>
-            <h2 className="text-4xl text-[#0D1B3E] mb-3" style={{ fontFamily: "var(--font-display)", fontWeight: 700 }}>
-              {isTraining ? "Enroll in Training" : "Drop your application"}
-            </h2>
-            <p className="text-[#5A6A8A]">
-              {isTraining 
-                ? "Fill in your details below to join the AffiSphere Training Program. We will contact you shortly." 
-                : "Fill in your details below — our team reviews every application within 48 hours."}
-            </p>
+        {/* Open Positions */}
+        <div className="space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/10">
+            <div>
+              <span className="text-xs font-mono uppercase tracking-widest text-cyan-400">Open Roles</span>
+              <h2 className="text-2xl sm:text-3xl font-bold text-white mt-1">Active Positions</h2>
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              {[
+                { id: "all", label: "All Roles" },
+                { id: "full-time", label: "Full-Time" },
+                { id: "part-time", label: "Part-Time" },
+                { id: "internship", label: "Internships" }
+              ].map(f => (
+                <button
+                  key={f.id}
+                  onClick={() => setFilter(f.id)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-mono transition-all border ${
+                    filter === f.id
+                      ? "bg-blue-600 border-blue-500 text-white font-bold"
+                      : "bg-[#090E1C] border-white/10 text-slate-400 hover:text-white"
+                  }`}
+                >
+                  {f.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            {filtered.map((job, idx) => (
+              <a
+                key={idx}
+                href="#apply"
+                className="p-5 rounded-2xl bg-[#090E1C] border border-white/5 hover:border-cyan-500/30 hover:bg-[#0D162C] transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4 group"
+              >
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-base font-bold text-white group-hover:text-cyan-300 transition-colors">
+                      {job.role}
+                    </span>
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-white/5 text-slate-300 border border-white/10 capitalize">
+                      {job.type}
+                    </span>
+                  </div>
+                  <div className="flex flex-wrap gap-1.5 pt-1">
+                    {job.skills.map(s => (
+                      <span key={s} className="px-2 py-0.5 rounded bg-black/40 text-[10px] font-mono text-slate-400">
+                        {s}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-4 shrink-0">
+                  <span className="text-xs font-mono text-slate-400">{job.location}</span>
+                  <div className="flex items-center gap-1 text-xs font-mono text-cyan-400 group-hover:translate-x-1 transition-transform">
+                    <span>Apply</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+
+        {/* Application Form */}
+        <div id="apply" className="p-8 lg:p-12 rounded-3xl glass-panel border border-white/10 space-y-6">
+          <div>
+            <span className="text-xs font-mono uppercase tracking-widest text-cyan-400">Application Gateway</span>
+            <h2 className="text-2xl sm:text-3xl font-bold text-white mt-1">Submit Your Profile</h2>
+            <p className="text-xs text-slate-400 mt-1">We review every application thoroughly within 48 hours.</p>
           </div>
 
           {submitted ? (
-            <div className="text-center py-16">
-              <div className="w-16 h-16 rounded-2xl bg-emerald-100 flex items-center justify-center mx-auto mb-5">
-                <CheckCircle2 className="w-8 h-8 text-emerald-600" />
+            <div className="text-center py-10 space-y-4">
+              <div className="w-14 h-14 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto border border-emerald-500/30">
+                <CheckCircle2 className="w-7 h-7" />
               </div>
-              <h3 className="text-2xl text-[#0D1B3E] mb-2" style={{ fontFamily: "var(--font-display)", fontWeight: 700 }}>
-                {isTraining ? "Application Submitted!" : "Application Received!"}
-              </h3>
-              <p className="text-[#5A6A8A] max-w-md mx-auto mb-6">
-                {isTraining 
-                  ? "Thank you for applying to the Affisphere Training Program. Our team will review your application and get back to you within 48 hours. Keep an eye on your email."
-                  : "Thank you for applying to AffiSphere. Our team will review your application and contact you shortly regarding the interview process."}
+              <h3 className="text-2xl font-bold text-white">Application Received!</h3>
+              <p className="text-xs text-slate-300 max-w-md mx-auto leading-relaxed">
+                Thank you for applying. Our talent and engineering team will review your background and reach out regarding interview steps.
               </p>
-              <button onClick={() => setSubmitted(false)} className={isTraining ? "px-6 py-2.5 rounded-xl bg-[#0D1B3E] text-white font-semibold hover:bg-[#1A2E63] transition-colors" : "text-[#2B7BE5] font-semibold"}>
-                {isTraining ? "Close" : "Submit another application"}
+              <button
+                onClick={() => setSubmitted(false)}
+                className="text-xs font-mono text-cyan-400 hover:underline pt-2"
+              >
+                Submit another application
               </button>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <form onSubmit={handleSubmit} className="space-y-4 max-w-2xl">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-semibold text-[#0D1B3E] mb-2">Full Name *</label>
+                  <label className="block text-xs font-mono uppercase text-slate-300 mb-1">Full Name *</label>
                   <input
                     required
                     type="text"
                     placeholder="Arjun Sharma"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl border border-[#0D1B3E]/15 bg-[#F8F9FB] text-[#0D1B3E] placeholder-[#5A6A8A]/60 focus:outline-none focus:ring-2 focus:ring-[#2B7BE5]/30 focus:border-[#2B7BE5] transition-all"
+                    className="w-full p-3 rounded-xl bg-[#070B14] border border-white/10 text-white text-xs focus:outline-none focus:border-cyan-400"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-[#0D1B3E] mb-2">Email Address *</label>
+                  <label className="block text-xs font-mono uppercase text-slate-300 mb-1">Email Address *</label>
                   <input
                     required
                     type="email"
                     placeholder="arjun@example.com"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl border border-[#0D1B3E]/15 bg-[#F8F9FB] text-[#0D1B3E] placeholder-[#5A6A8A]/60 focus:outline-none focus:ring-2 focus:ring-[#2B7BE5]/30 focus:border-[#2B7BE5] transition-all"
+                    className="w-full p-3 rounded-xl bg-[#070B14] border border-white/10 text-white text-xs focus:outline-none focus:border-cyan-400"
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-semibold text-[#0D1B3E] mb-2">Phone Number *</label>
+                  <label className="block text-xs font-mono uppercase text-slate-300 mb-1">Phone Number *</label>
                   <input
                     required
                     type="tel"
                     placeholder="+91 98765 43210"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl border border-[#0D1B3E]/15 bg-[#F8F9FB] text-[#0D1B3E] placeholder-[#5A6A8A]/60 focus:outline-none focus:ring-2 focus:ring-[#2B7BE5]/30 focus:border-[#2B7BE5] transition-all"
+                    className="w-full p-3 rounded-xl bg-[#070B14] border border-white/10 text-white text-xs focus:outline-none focus:border-cyan-400"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-[#0D1B3E] mb-2">College / University *</label>
+                  <label className="block text-xs font-mono uppercase text-slate-300 mb-1">College / Organization</label>
                   <input
-                    required
                     type="text"
-                    placeholder="Indian Institute of Technology"
+                    placeholder="e.g. Pune University / Company"
                     value={formData.college}
                     onChange={(e) => setFormData({ ...formData, college: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl border border-[#0D1B3E]/15 bg-[#F8F9FB] text-[#0D1B3E] placeholder-[#5A6A8A]/60 focus:outline-none focus:ring-2 focus:ring-[#2B7BE5]/30 focus:border-[#2B7BE5] transition-all"
+                    className="w-full p-3 rounded-xl bg-[#070B14] border border-white/10 text-white text-xs focus:outline-none focus:border-cyan-400"
                   />
                 </div>
               </div>
 
-              {isTraining ? (
-                <>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <div>
-                      <label className="block text-sm font-semibold text-[#0D1B3E] mb-2">Year of Study *</label>
-                      <select
-                        required
-                        value={formData.yearOfStudy}
-                        onChange={(e) => setFormData({ ...formData, yearOfStudy: e.target.value })}
-                        className="w-full px-4 py-3 rounded-xl border border-[#0D1B3E]/15 bg-[#F8F9FB] text-[#0D1B3E] focus:outline-none focus:ring-2 focus:ring-[#2B7BE5]/30 focus:border-[#2B7BE5] transition-all"
-                      >
-                        <option value="">Select Year</option>
-                        <option value="1st Year">1st Year</option>
-                        <option value="2nd Year">2nd Year</option>
-                        <option value="3rd Year">3rd Year</option>
-                        <option value="4th Year">4th Year</option>
-                        <option value="Postgraduate">Postgraduate</option>
-                        <option value="Recent Graduate">Recent Graduate</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-semibold text-[#0D1B3E] mb-2">Course / Branch *</label>
-                      <input
-                        required
-                        type="text"
-                        placeholder="e.g. B.Tech Computer Science"
-                        value={formData.courseBranch}
-                        onChange={(e) => setFormData({ ...formData, courseBranch: e.target.value })}
-                        className="w-full px-4 py-3 rounded-xl border border-[#0D1B3E]/15 bg-[#F8F9FB] text-[#0D1B3E] placeholder-[#5A6A8A]/60 focus:outline-none focus:ring-2 focus:ring-[#2B7BE5]/30 focus:border-[#2B7BE5] transition-all"
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-semibold text-[#0D1B3E] mb-2">Your Skills *</label>
-                    <input
-                      required
-                      type="text"
-                      placeholder="React, Java, PostgreSQL, Figma..."
-                      value={formData.skills}
-                      onChange={(e) => setFormData({ ...formData, skills: e.target.value })}
-                      className="w-full px-4 py-3 rounded-xl border border-[#0D1B3E]/15 bg-[#F8F9FB] text-[#0D1B3E] placeholder-[#5A6A8A]/60 focus:outline-none focus:ring-2 focus:ring-[#2B7BE5]/30 focus:border-[#2B7BE5] transition-all"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-semibold text-[#0D1B3E] mb-2">Why do you want to join this training? *</label>
-                    <textarea
-                      required
-                      rows={4}
-                      placeholder="Tell us why you are interested in this training..."
-                      value={formData.whyJoin}
-                      onChange={(e) => setFormData({ ...formData, whyJoin: e.target.value })}
-                      className="w-full px-4 py-3 rounded-xl border border-[#0D1B3E]/15 bg-[#F8F9FB] text-[#0D1B3E] placeholder-[#5A6A8A]/60 focus:outline-none focus:ring-2 focus:ring-[#2B7BE5]/30 focus:border-[#2B7BE5] transition-all resize-none"
-                    />
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div>
-                    <label className="block text-sm font-semibold text-[#0D1B3E] mb-2">Your Skills *</label>
-                    <input
-                      required
-                      type="text"
-                      placeholder="React, Java, PostgreSQL, Figma..."
-                      value={formData.skills}
-                      onChange={(e) => setFormData({ ...formData, skills: e.target.value })}
-                      className="w-full px-4 py-3 rounded-xl border border-[#0D1B3E]/15 bg-[#F8F9FB] text-[#0D1B3E] placeholder-[#5A6A8A]/60 focus:outline-none focus:ring-2 focus:ring-[#2B7BE5]/30 focus:border-[#2B7BE5] transition-all"
-                    />
-                  </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-mono uppercase text-slate-300 mb-1">GitHub / Portfolio Link</label>
+                  <input
+                    type="url"
+                    placeholder="https://github.com/yourhandle"
+                    value={formData.github}
+                    onChange={(e) => setFormData({ ...formData, github: e.target.value })}
+                    className="w-full p-3 rounded-xl bg-[#070B14] border border-white/10 text-white text-xs focus:outline-none focus:border-cyan-400"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-mono uppercase text-slate-300 mb-1">Key Skills *</label>
+                  <input
+                    required
+                    type="text"
+                    placeholder="Python, React, TypeScript, LangGraph..."
+                    value={formData.skills}
+                    onChange={(e) => setFormData({ ...formData, skills: e.target.value })}
+                    className="w-full p-3 rounded-xl bg-[#070B14] border border-white/10 text-white text-xs focus:outline-none focus:border-cyan-400"
+                  />
+                </div>
+              </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <div>
-                      <label className="block text-sm font-semibold text-[#0D1B3E] mb-2">Portfolio Link (Optional)</label>
-                      <input
-                        type="url"
-                        placeholder="https://yourportfolio.com"
-                        value={formData.portfolio}
-                        onChange={(e) => setFormData({ ...formData, portfolio: e.target.value })}
-                        className="w-full px-4 py-3 rounded-xl border border-[#0D1B3E]/15 bg-[#F8F9FB] text-[#0D1B3E] placeholder-[#5A6A8A]/60 focus:outline-none focus:ring-2 focus:ring-[#2B7BE5]/30 focus:border-[#2B7BE5] transition-all"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-semibold text-[#0D1B3E] mb-2">GitHub Link (Optional)</label>
-                      <input
-                        type="url"
-                        placeholder="https://github.com/yourusername"
-                        value={formData.github}
-                        onChange={(e) => setFormData({ ...formData, github: e.target.value })}
-                        className="w-full px-4 py-3 rounded-xl border border-[#0D1B3E]/15 bg-[#F8F9FB] text-[#0D1B3E] placeholder-[#5A6A8A]/60 focus:outline-none focus:ring-2 focus:ring-[#2B7BE5]/30 focus:border-[#2B7BE5] transition-all"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-semibold text-[#0D1B3E] mb-2">Resume / CV *</label>
-                    <label className="flex flex-col items-center justify-center w-full h-36 rounded-xl border-2 border-dashed border-[#0D1B3E]/20 hover:border-[#2B7BE5]/50 bg-[#F8F9FB] cursor-pointer transition-all group">
-                      <input
-                        required
-                        type="file"
-                        accept=".pdf,.doc,.docx"
-                        className="hidden"
-                        onChange={(e) => setFormData({ ...formData, resume: e.target.files?.[0] || null })}
-                      />
-                      <Upload className="w-8 h-8 text-[#5A6A8A] group-hover:text-[#2B7BE5] mb-2 transition-colors" />
-                      {formData.resume ? (
-                        <span className="text-[#2B7BE5] text-sm font-medium">{formData.resume.name}</span>
-                      ) : (
-                        <>
-                          <span className="text-[#5A6A8A] text-sm">Drop your resume here or click to upload</span>
-                          <span className="text-[#5A6A8A]/60 text-xs mt-1">PDF, DOC, DOCX — max 10MB</span>
-                        </>
-                      )}
-                    </label>
-                  </div>
-                </>
-              )}
+              <div>
+                <label className="block text-xs font-mono uppercase text-slate-300 mb-1">Resume / CV *</label>
+                <label className="flex flex-col items-center justify-center w-full h-32 rounded-xl border-2 border-dashed border-white/15 hover:border-cyan-400/50 bg-[#070B14] cursor-pointer transition-all">
+                  <input
+                    required
+                    type="file"
+                    accept=".pdf,.doc,.docx"
+                    className="hidden"
+                    onChange={(e) => setFormData({ ...formData, resume: e.target.files?.[0] || null })}
+                  />
+                  <Upload className="w-6 h-6 text-slate-400 mb-1" />
+                  {formData.resume ? (
+                    <span className="text-cyan-400 text-xs font-mono">{formData.resume.name}</span>
+                  ) : (
+                    <span className="text-xs text-slate-400 font-mono">Upload PDF or DOCX (Max 10MB)</span>
+                  )}
+                </label>
+              </div>
 
               <button
                 type="submit"
-                className="w-full py-4 rounded-xl bg-[#2B7BE5] text-white font-semibold hover:bg-[#1E6DD4] transition-colors text-base shadow-lg shadow-[#2B7BE5]/20"
+                disabled={isSubmitting}
+                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-lg shadow-cyan-500/20 disabled:opacity-50"
               >
-                {isTraining ? "Enroll Now" : "Apply Now"}
+                {isSubmitting ? "Submitting Application..." : "Submit Application"}
               </button>
             </form>
           )}
         </div>
-      </section>
+      </div>
     </div>
   );
 }
